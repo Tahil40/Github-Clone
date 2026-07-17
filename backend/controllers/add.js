@@ -11,7 +11,7 @@ async function addFile(filePath){
         await fs.copyFile(filePath, path.join(staggingPath, fileName));
         console.log(`File ${fileName} added to the staging area!`);
     } catch (error) {
-        console.log("Error; ", error);
+        console.error("Error; ", error);
     }
 };
 

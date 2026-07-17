@@ -12,7 +12,7 @@ async function initRepo(){
         
         console.log("Repository initialised!");
     } catch (error) {
-        console.log("Error; ", error);
+        console.error("Error; ", error);
     }
 };
 

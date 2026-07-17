@@ -27,7 +27,7 @@ async function commitFile(message) {
 
     console.log(`Commit ${commitID} created with message: ${message}`);
   } catch (error) {
-    console.log("Error; ", error);
+    console.error("Error; ", error);
   }
 }
 
