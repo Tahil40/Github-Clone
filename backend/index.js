@@ -32,16 +32,23 @@ yargs(hideBin(process.argv))
       });
     },
     (argv) => {
-      commitFile(argv.message)
+      commitFile(argv.message);
     },
   )
   .command("push", "Push commits to S3", {}, pushFile)
   .command("pull", "Pull commits from S3", {}, pullFile)
-  .command("revert <CommitID>", "Revert to a specific commit", (yargs) => {
-    yargs.positional("CommitID", {
+  .command(
+    "revert <CommitID>",
+    "Revert to a specific commit",
+    (yargs) => {
+      yargs.positional("CommitID", {
         describe: "commit ID to revert to",
-        type: "string"
-    })
-  }, revertFile)
+        type: "string",
+      });
+    },
+    (argv) => {
+      revertFile(argv.CommitID);
+    },
+  )
   .demandCommand(1, "you need at least one command")
   .help().argv;
