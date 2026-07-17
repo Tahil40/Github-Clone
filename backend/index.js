@@ -6,9 +6,17 @@ const { commitFile } = require("./controllers/commit.js");
 const { pullFile } = require("./controllers/pull.js");
 const { pushFile } = require("./controllers/push.js");
 const { revertFile } = require("./controllers/revert.js");
+const cors = require("cors");
+const mongoose = require("mongoose");
+const express = require("express");
+const http = require("http");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
+
+dotenv.config();
 
 yargs(hideBin(process.argv))
-.command("start-server", "Starts a new Server", {}, ServerFunction)
+  .command("start-server", "Starts a new Server", {}, ServerFunction)
   .command("init", "Initialise a new repository", {}, initRepo)
   .command(
     "add <file>",
@@ -55,5 +63,19 @@ yargs(hideBin(process.argv))
   .help().argv;
 
 function ServerFunction() {
-  console.log("server function is working");
+  const app = express();
+  const port = process.env.PORT || 3000;
+
+  app.use(bodyParser.json());
+  app.use(express.json());
+
+  const MONGO_URI = process.env.MONGO_URI;
+  mongoose
+    .connect(MONGO_URI)
+    .then(() => {
+      console.log("Successfully connected to MongoDB.");
+    })
+    .catch((error) => {
+      console.log(`MongoDB connection unsuccessfull ${error}`);
+    });
 };
