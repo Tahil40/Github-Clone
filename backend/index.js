@@ -18,7 +18,9 @@ yargs(hideBin(process.argv))
         type: "string",
       });
     },
-    addFile,
+    (argv) => {
+      addFile(argv.file);
+    },
   )
   .command(
     "commit <message>",
@@ -29,7 +31,9 @@ yargs(hideBin(process.argv))
         type: "string",
       });
     },
-    commitFile,
+    (argv) => {
+      commitFile(argv.message)
+    },
   )
   .command("push", "Push commits to S3", {}, pushFile)
   .command("pull", "Pull commits from S3", {}, pullFile)
