@@ -8,6 +8,7 @@ const { pushFile } = require("./controllers/push.js");
 const { revertFile } = require("./controllers/revert.js");
 
 yargs(hideBin(process.argv))
+.command("start-server", "Starts a new Server", {}, ServerFunction)
   .command("init", "Initialise a new repository", {}, initRepo)
   .command(
     "add <file>",
@@ -52,3 +53,7 @@ yargs(hideBin(process.argv))
   )
   .demandCommand(1, "you need at least one command")
   .help().argv;
+
+function ServerFunction() {
+  console.log("server function is working");
+};
