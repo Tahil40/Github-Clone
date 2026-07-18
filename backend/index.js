@@ -13,6 +13,7 @@ const http = require("http");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const { Server } = require("socket.io");
+const mainRouter = require("./routes/main.router.js");
 
 dotenv.config();
 
@@ -81,10 +82,8 @@ function ServerFunction() {
     });
 
   app.use(cors({ origin: "*" }));
-
-  app.get("/", (req, res) => {
-    res.send("Server is working successfully....");
-  });
+  
+  app.use("/", mainRouter);
 
   const httpServer = http.createServer(app);
   const socket_io_server = new Server(httpServer, {
