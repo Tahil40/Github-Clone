@@ -12,6 +12,7 @@ const express = require("express");
 const http = require("http");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
+const { Server } = require("socket.io");
 
 dotenv.config();
 
@@ -78,4 +79,39 @@ function ServerFunction() {
     .catch((error) => {
       console.log(`MongoDB connection unsuccessfull ${error}`);
     });
-};
+
+  app.use(cors({ origin: "*" }));
+
+  app.get("/", (req, res) => {
+    res.send("Server is working successfully....");
+  });
+
+  const httpServer = http.createServer(app);
+  const socket_io_server = new Server(httpServer, {
+    cors: {
+      origin: "*", 
+      methods: ["GET", "POST"], 
+    }, 
+  });
+
+  let user = "test";
+  socket_io_server.on("connection", (socket) => {
+    socket.on("joinRoom", (userId) => {
+      user = userId; 
+      console.log("====");
+      console.log(user); 
+      console.log("====");
+      socket.join(userId);
+    });
+  });
+
+  const db = mongoose.connection; 
+  db.once("open", async () => {
+    console.log("CRUD opearations is called...."); 
+    // CRUD operations....
+  });
+
+  httpServer.listen(port, () => {
+    console.log(`http Server is running on port ${port}`);
+  }); 
+}
