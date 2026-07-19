@@ -106,20 +106,69 @@ const getUserProfile = async (req, res) => {
       _id: new ObjectId(id),
     });
 
-    if(!user_data){
-      res.status(400).json({message: "user not found"});
-    };
+    if (!user_data) {
+      res.status(400).json({ message: "user not found" });
+    }
 
     res.send(user_data);
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
-  };
+  }
 };
 
-const updateUserProfile = (req, res) => {};
+const updateUserProfile = async (req, res) => {
+  const { id } = req.params;
+  const { email, password } = req.body;
+  try {
+    await connectToMongoDB();
+    const mongodb_db = client.db("GithubDatabase");
+    const user_collection = mongodb_db.collection("User");
 
-const deleteUserProfile = (req, res) => {};
+    const update_user_object = { email };
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      const hashed_password = await bcrypt.hash(password, salt);
+      update_user_object.password = hashed_password;
+    }
+
+    const result = await user_collection.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: update_user_object },
+      { returnDocument: "after" },
+    );
+
+    if(!result.value){
+      return res.status(404).json({message: "user not found!"});
+    };
+
+    res.send(result.value);
+  } catch (error) {
+    console.error("Error; ", error);
+    res.status(500).send("Server Error");
+  }
+};
+
+const deleteUserProfile = (req, res) => {
+  const { id } = req.params;
+  try {
+    const mongodb_db = client.db("GithubDatabase");
+    const user_collection = mongodb_db.collection("User");
+
+    const result = await user_collection.deleteOne({
+      _id: new ObjectId(id)
+    });
+
+    if(result.deleteCount==0){
+      return res.status(404).json({message: "user not found!"});
+    };
+
+    res.json({message: "user profile deleted!"});
+  } catch (error) {
+    console.error("Error; ", error);
+    res.status(500).send("Server Error");
+  }
+};
 
 module.exports = {
   getAllUsers,
