@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
+const ObjectId = require("mongodb").ObjectId;
 
 dotenv.config();
 const mongodb_uri = process.env.MONGODB_URI;
@@ -17,7 +18,19 @@ async function connectToMongoDB() {
   }
 }
 
-const getAllUsers = (req, res) => {};
+const getAllUsers = async (req, res) => {
+  try {
+    await connectToMongoDB();
+    const mongodb_db = client.db("GithubDatabase");
+    const user_collection = mongodb_db.collection("User");
+
+    const user_data = await user_collection.find({}).toArray();
+    res.json(user_data);
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).send("Server Error");
+  }
+};
 
 const signUP = async (req, res) => {
   const { username, email, password } = req.body;
@@ -82,7 +95,27 @@ const login = async (req, res) => {
   }
 };
 
-const getUserProfile = (req, res) => {};
+const getUserProfile = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await connectToMongoDB();
+    const mongodb_db = client.db("GithubDatabase");
+    const user_collection = mongodb_db.collection("User");
+
+    const user_data = await user_collection.findOne({
+      _id: new ObjectId(id),
+    });
+
+    if(!user_data){
+      res.status(400).json({message: "user not found"});
+    };
+
+    res.send(user_data);
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).send("Server Error");
+  };
+};
 
 const updateUserProfile = (req, res) => {};
 
