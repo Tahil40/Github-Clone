@@ -34,27 +34,46 @@ const createRepository = async (req, res) => {
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
-  };
+  }
 };
 
-const getAllRepositories = (req, res) => {
+const getAllRepositories = async (req, res) => {
   try {
+    const repositories_data = await repositoryModel
+      .find({})
+      .populate("owner")
+      .populate("issues");
+    res.json(repositories_data);
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
   }
 };
 
-const fetchRepositoryById = (req, res) => {
+const fetchRepositoryById = async (req, res) => {
+  const { id } = req.params;
   try {
+    const repository = await repositoryModel
+      .find({ _id: id })
+      .populate("owner")
+      .populate("issues");
+
+    res.json(repository);
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
   }
 };
 
-const fetchRepositoryByName = (req, res) => {
+const fetchRepositoryByName = async (req, res) => {
+  const { name } = req.params;
   try {
+    const repository = await repositoryModel
+      .find({ name: name })
+      .populate("owner")
+      .populate("issues");
+
+    res.json(repository);
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
