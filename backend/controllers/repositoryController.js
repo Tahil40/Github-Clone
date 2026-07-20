@@ -119,8 +119,12 @@ const updateRepositoryById = async (req, res) => {
   }
 };
 
-const deleteRepositoryById = (req, res) => {
+const deleteRepositoryById = async (req, res) => {
+  const { id } = req.params;
   try {
+    const repository = await repositoryModel.findByIdAndDelete(id);
+    console.log(repository);
+    res.json({ message: "Repository deleted successfully!" });
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
