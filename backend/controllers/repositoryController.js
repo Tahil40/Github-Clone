@@ -80,8 +80,16 @@ const fetchRepositoryByName = async (req, res) => {
   }
 };
 
-const fetchRepositoryForLoggedInUser = (req, res) => {
+const fetchRepositoryForLoggedInUser = async(req, res) => {
+  const userId = req.user; 
   try {
+    const repositories_data = await repositoryModel.find({owner: userId});
+    
+    if(!repositories_data || repositories_data.length == 0){
+      return res.status(404).json({error: "User Repositories not found"});
+    };
+
+    res.json({message: "Repository found!", repositories_data});
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
