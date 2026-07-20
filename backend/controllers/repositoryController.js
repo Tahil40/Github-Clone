@@ -127,8 +127,20 @@ const deleteRepositoryById = (req, res) => {
   }
 };
 
-const toggleVisibilityOfRepositoryById = (req, res) => {
+const toggleVisibilityOfRepositoryById = async (req, res) => {
+  const { id } = req.params;
   try {
+    const repository = await repositoryModel.findById(id);
+    if (!repository) {
+      return res.status(404).json({ error: "Repository not found!" });
+    }
+    repository.visibility = !repository.visibility;
+    const togggle_visibility = await repository.save();
+
+    res.json({
+      message: "Repository toggled successfully!",
+      repository_visibility: togggle_visibility,
+    });
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).send("Server Error");
